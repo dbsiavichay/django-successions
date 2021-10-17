@@ -5,5 +5,8 @@
 *.sqlite3
 *.lock
 .env
+.dockerignore
+Dockerfile
+docker-compose.yml
 media/
 scripts/
