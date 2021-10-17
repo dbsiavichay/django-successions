@@ -1,0 +1,9 @@
+.DS_Store
+=======
+*.pyc
+*~
+*.sqlite3
+*.lock
+.env
+media/
+scripts/
