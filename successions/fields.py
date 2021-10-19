@@ -1,8 +1,7 @@
-from django.db import models
 from django.core import checks
-from functools import partialmethod
+from django.db import models
+
 from .models import Succession
-from .utils import save_with_succession_value
 
 
 class SuccessionField(models.CharField):
@@ -60,28 +59,34 @@ class SuccessionField(models.CharField):
         if self.prefix:
             kwargs["prefix"] = self.prefix
         if self.suffix:
-            kwargsk["suffix"] = self.suffix
+            kwargs["suffix"] = self.suffix
         if self.padding:
             kwargs["padding"] = self.padding
         if self.increment != 1:
             kwargs["increment"] = self.increment
         return name, path, args, kwargs
 
-    def get_kwargs(self):
+    def get_succession_kwargs(self, model_instance):
+        meta = model_instance._meta
+        name = "{}_{}_{}".format(meta.app_label, meta.model_name, self.attname)
         return {
-            "name": self.succession_name,
+            "name": name,
             "prefix": self.prefix,
             "suffix": self.suffix,
             "padding": self.padding,
             "increment": self.increment,
         }
 
-    def contribute_to_class(self, cls, name, **kwargs):
-        super().contribute_to_class(cls, name, **kwargs)
-        meta = cls._meta
-        self.succession_name = "{}_{}_{}".format(meta.app_label, meta.model_name, name)
-        setattr(
-            cls,
-            "save",
-            partialmethod(save_with_succession_value, name),
-        )
+    def generate_next_value(self, **kwargs):
+        succession = Succession.objects.get_or_create(**kwargs)[0]
+        next_value = succession.get_next_value()
+        return next_value, succession
+
+    def pre_save(self, model_instance, add):
+        value = super().pre_save(model_instance, add)
+        if add or not value:
+            kwargs = self.get_succession_kwargs(model_instance)
+            value, succession = self.generate_next_value(**kwargs)
+            setattr(model_instance, self.attname, value)
+            succession.save()
+        return value

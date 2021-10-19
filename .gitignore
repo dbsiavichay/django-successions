@@ -8,5 +8,5 @@
 .dockerignore
 Dockerfile
 docker-compose.yml
-media/
+Makefile
 scripts/
