@@ -1,5 +1,3 @@
-import django
-
 LOCAL_APPS = ("successions", "testapp")
 
 INSTALLED_APPS = (

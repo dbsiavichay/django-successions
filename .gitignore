@@ -8,4 +8,7 @@
 .dockerignore
 Dockerfile
 docker-compose.yml
+dist/
+build/
+django_successions.egg-info/
 scripts/
