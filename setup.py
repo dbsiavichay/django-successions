@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="django-successions",
-    version="1.0.0",
+    version="1.0.1",
     author="Denis Siavichay",
     author_email="dbsiavichay@gmail.com",
     description="A Django library useful to define alphanumeric sequences for the models.",

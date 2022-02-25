@@ -1,14 +1,7 @@
-from datetime import datetime
-
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MinValueValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-FIXTURES = {
-    "%year%": lambda: datetime.now().year,
-    "%month%": lambda: datetime.now().month,
-    "%day%": lambda: datetime.now().day,
-}
+from .utils import generate_next_value
 
 
 class Succession(models.Model):
@@ -24,7 +17,6 @@ class Succession(models.Model):
     padding = models.PositiveSmallIntegerField(
         validators=[
             MinValueValidator(limit_value=1),
-            MaxValueValidator(limit_value=10),
         ],
         verbose_name=_("numeric padding"),
         help_text=_(
@@ -47,16 +39,6 @@ class Succession(models.Model):
         return "{}%number%{}".format(self.prefix, self.suffix)
 
     def get_next_value(self):
-        self.current_value = (
-            self.current_value + self.increment
-            if self.current_value
-            else self.increment
+        return generate_next_value(
+            self.current_value, self.increment, self.padding, self.prefix, self.suffix
         )
-        fixtures = {
-            **FIXTURES,
-            "%number%": lambda: str(self.current_value).zfill(self.padding),
-        }
-        value = str(self)
-        for replace, func in fixtures.items():
-            value = value.replace(replace, str(func()))
-        return value

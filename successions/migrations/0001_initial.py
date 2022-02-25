@@ -31,8 +31,7 @@ class Migration(migrations.Migration):
                     models.PositiveSmallIntegerField(
                         help_text="total size of the numeric part, will be add zeros to the left for complete this value",
                         validators=[
-                            django.core.validators.MinValueValidator(limit_value=1),
-                            django.core.validators.MaxValueValidator(limit_value=10),
+                            django.core.validators.MinValueValidator(limit_value=1)
                         ],
                         verbose_name="numeric padding",
                     ),
